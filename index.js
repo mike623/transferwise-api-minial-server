@@ -15,7 +15,6 @@ if (process.env.AUTH !== "false") {
       prev[user] = pwd;
       return prev;
     }, {});
-  console.log({ users });
   app.use(
     basicAuth({
       users,
