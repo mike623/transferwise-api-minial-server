@@ -1,5 +1,27 @@
-// Require the framework and instantiate it
-const fastify = require("fastify")({ logger: true });
+const connect = require("express");
+
+const app = connect();
+const basicAuth = require("express-basic-auth");
+
+/**
+ * see more on README
+ */
+if (process.env.AUTH !== "false") {
+  if (!process.env.AUTH_LIST) throw new Error("AUTH_LIST missing");
+  const users = process.env.AUTH_LIST.split(";")
+    .filter(Boolean)
+    .reduce((prev, cur) => {
+      const [user, pwd] = cur.split(":");
+      prev[user] = pwd;
+      return prev;
+    }, {});
+  console.log({ users });
+  app.use(
+    basicAuth({
+      users,
+    })
+  );
+}
 
 const API = require("./api");
 const api = API({
@@ -9,29 +31,30 @@ const api = API({
 });
 
 // // Declare a route
-fastify.get("/profile", async (request, reply) => {
-  return api.getProfile();
+app.get("/profile", async (req, res) => {
+  const profile = await api.getProfile();
+  res.json(profile);
 });
 
-fastify.get("/statement", async (request, reply) => {
-  const month = parseInt(request.query.indexMon || new Date().getMonth());
+app.get("/statement", async (req, res) => {
+  const month = parseInt(req.query.indexMon || new Date().getMonth());
   const date = new Date();
   date.setMonth(month);
   const start = new Date(date.getFullYear(), month, 1).toISOString();
   const end = new Date(date.getFullYear(), month + 1, 0).toISOString();
-  const { currency = "GBP", type = "COMPACT" } = request.query;
+  const { currency = "GBP", type = "COMPACT" } = req.query;
   const intervalStart = start;
   const intervalEnd = end;
-  return api.getStatement({ intervalStart, intervalEnd, currency, type });
+  return res.send(
+    api.getStatement({ intervalStart, intervalEnd, currency, type })
+  );
 });
 
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen(process.env.PORT || 3000);
-    fastify.log.info(`server listening on ${fastify.server.address().port}`);
+    await app.listen(process.env.PORT || 3000);
   } catch (err) {
-    fastify.log.error(err);
     process.exit(1);
   }
 };

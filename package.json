@@ -5,7 +5,9 @@
   "main": "index.js",
   "dependencies": {
     "axios": "^0.20.0",
-    "fastify": "^3.5.1"
+    "connect-wwwhisper": "^0.1.21",
+    "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0"
   },
   "devDependencies": {},
   "scripts": {
