@@ -44,9 +44,8 @@ app.get("/statement", async (req, res) => {
   const { currency = "GBP", type = "COMPACT" } = req.query;
   const intervalStart = start;
   const intervalEnd = end;
-  return res.send(
-    api.getStatement({ intervalStart, intervalEnd, currency, type })
-  );
+  const result = await api.getStatement({ intervalStart, intervalEnd, currency, type })
+  return res.send(result);
 });
 
 // Run the server!
