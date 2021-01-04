@@ -37,10 +37,9 @@ app.get("/profile", async (req, res) => {
 
 app.get("/statement", async (req, res) => {
   const month = parseInt(req.query.indexMon || new Date().getMonth());
-  const date = new Date();
-  date.setMonth(month);
-  const start = new Date(date.getFullYear(), month, 1).toISOString();
-  const end = new Date(date.getFullYear(), month + 1, 0).toISOString();
+  const year = parseInt(req.query.year || new Date().getFullYear());
+  const start = new Date(year, month, 1).toISOString();
+  const end = new Date(year, month + 1, 0).toISOString();
   const { currency = "GBP", type = "COMPACT" } = req.query;
   const intervalStart = start;
   const intervalEnd = end;
